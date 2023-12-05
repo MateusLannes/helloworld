@@ -1,8 +1,9 @@
 package br.ifes.dw.helloworld.repository;
 
 import br.ifes.dw.helloworld.model.Produto;
+import br.ifes.dw.helloworld.interfaces.InterfaceRepoTXT;
 
-//import java.util.*;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.nio.file.Files;
@@ -10,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
-public class RepositorioTXT {
+public class RepositorioTXT implements InterfaceRepoTXT<Produto>{
 
     private final Path caminhoArquivo;
     private final String nomeArquivo;
@@ -21,6 +22,7 @@ public class RepositorioTXT {
         criarArquivo();
     }
 
+    @Override
     public List<Produto> lerArquivo() throws IOException {
         FileReader fileReader = new FileReader(nomeArquivo);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -54,17 +56,18 @@ public class RepositorioTXT {
     }
 
 
-
+    @Override
     public void criarArquivo() throws IOException {
         if (Files.notExists(caminhoArquivo)) {
             Files.createFile(caminhoArquivo);
         }
     }
-    
-    public void atualizarArquivo(List<Produto> produtos) throws IOException {
+
+    @Override
+    public void atualizarArquivo(List<Produto> lista) throws IOException {
         FileWriter fileWriter = new FileWriter(nomeArquivo, true);
         PrintWriter printWriter = new PrintWriter(fileWriter);
-        for(Produto produto: produtos){
+        for(Produto produto: lista){
             printWriter.println(String.format("%d;%s;%.2f", produto.getId(), produto.getNome(), produto.getPreco()));
         }
         
@@ -72,8 +75,8 @@ public class RepositorioTXT {
         printWriter.close();
     }
 
-    public void adicionarNovosDados(Produto prod) throws IOException {       
-        String novoRegistro = String.format("%d;%s;%.2f", prod.getId(), prod.getNome(), prod.getPreco());
+    public void adicionarNovosDados(Produto produto) throws IOException {       
+        String novoRegistro = String.format("%d;%s;%.2f", produto.getId(), produto.getNome(), produto.getPreco());
         Files.writeString(caminhoArquivo, novoRegistro, StandardOpenOption.APPEND);
     }
 
